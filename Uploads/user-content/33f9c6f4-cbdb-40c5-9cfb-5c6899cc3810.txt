@@ -1,0 +1,51 @@
+ public class WeatherData
+    {
+        public DateTime date { get; set; }
+        public int TemperatureC { get; set; }
+        public string? Summary { get; set; }
+
+    }
+
+
+ public class ApiClient
+    {
+        private readonly HttpClient _httpClient;
+        public ApiClient()
+        {
+            _httpClient = new HttpClient();
+            _httpClient.BaseAddress = new Uri("https://api.example.com/"); // Replace with your API endpoint
+            _httpClient.DefaultRequestHeaders.Accept.Clear();
+            _httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+        }
+        public async Task<List<WeatherData>> GetSampleDataAsync()
+        {
+            List<WeatherData> result = null;
+
+            HttpResponseMessage response = await _httpClient.GetAsync("api/sampledata"); // Replace with your API endpoint
+
+            if (response.IsSuccessStatusCode)
+            {
+                string jsonResult = await response.Content.ReadAsStringAsync();
+                result = JsonConvert.DeserializeObject<List<WeatherData>>(jsonResult);
+            }
+
+            return result;
+        }
+    }
+
+
+ public async Task<IActionResult> Index()
+    {
+        List<WeatherData> data = await _ApiClient.GetSampleDataAsync();
+        if (data != null)
+        {
+            // Process the retrieved data
+            ViewBag.Status = "Ok";
+            return View(data);
+        }
+        else
+        {
+            ViewBag.Status = "NotFound";
+            return View();
+        }
+    }

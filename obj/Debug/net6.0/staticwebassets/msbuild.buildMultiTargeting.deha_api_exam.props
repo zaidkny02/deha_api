@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\deha_api_exam.props" />
+</Project>
